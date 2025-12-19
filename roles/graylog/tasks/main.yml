@@ -1,0 +1,38 @@
+---
+- name: Graylog install docker and docker-compose
+  ansible.builtin.apt:
+    pkg:
+      - docker.io
+      - docker-compose
+
+- name: Tell kernel to use 262144 max files
+  ansible.posix.sysctl:
+    name: vm.max_map_count
+    value: "262144"
+    state: present
+    reload: true
+    sysctl_set: true
+    sysctl_file: /etc/sysctl.d/10-vmm.conf
+
+- name: Graylog force systemctl sysctl reload
+  command: sudo systemctl restart systemd-sysctl
+
+- name: create graylog docker-compose folder
+  ansible.builtin.file:
+    path: /home/grp2/graylog
+    state: directory
+    owner: 1000
+    group: 1000
+    mode: '0755'
+
+- name: copy compose file
+  ansible.builtin.copy:
+    src: roles/graylog/templates/docker-compose.yml
+    dest: /home/grp2/graylog/docker-compose.yml
+    owner: 1000
+    group: 1000
+    mode: '0644'
+
+- name: launch graylog ftw
+  community.docker.docker_compose_v2:
+    project_src: graylog

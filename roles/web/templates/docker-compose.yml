@@ -1,0 +1,32 @@
+networks:
+  forgejo:
+    external: false
+
+services:
+  server:
+    image: codeberg.org/forgejo/forgejo:13
+    container_name: forgejo
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - FORGEJO__database__DB_TYPE=mysql
+      - FORGEJO__database__HOST=172.16.135.29:3306
+      - FORGEJO__database__NAME=forgejo
+      - FORGEJO__database__USER=forgejo
+      - FORGEJO__database__PASSWD=epsi1234
+    restart: always
+    networks:
+      - forgejo
+    volumes:
+      - /home/forgejo/git:/data/git:rw
+      - /home/forgejo/ssh:/data/ssh
+      - config:/data/gitea
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - '80:3000'
+      - '2222:22'
+
+volumes:
+  config:
+    driver: local

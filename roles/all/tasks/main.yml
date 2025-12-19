@@ -1,0 +1,12 @@
+---
+- name: Install various basic tools
+  ansible.builtin.apt:
+    update_cache: yes
+    pkg:
+      - vim
+      - tmux
+      - htop
+      - mosh
+      - iftop
+      - iotop
+      - curl

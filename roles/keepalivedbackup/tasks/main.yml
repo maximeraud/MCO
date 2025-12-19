@@ -1,0 +1,18 @@
+---
+- name: Install keepalived
+  apt:
+    name: keepalived
+    state: latest
+
+- name: Copy keepalived config file
+  copy:
+    src: roles/keepalivedbackup/templates/keepalived_backup.conf
+    dest: /etc/keepalived/keepalived.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Restart keepalived service
+  systemd_service:
+    name: keepalived.service
+    state: restarted

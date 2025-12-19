@@ -1,0 +1,52 @@
+---
+- name: copy galera config file
+  copy:
+    src: roles/galerabootstrap/templates/galerabootstrap.cnf
+    dest: /etc/mysql/conf.d/galera.cnf
+    owner: root
+    group: root
+    mode: "0644"
+  register: galeraconfig
+
+- name: Restart mariadb if galera config has been modified
+  systemd_service:
+    name: mariadb.service
+    state: restarted
+  when: galeraconfig.changed
+
+- name: create forgejo database
+  community.mysql.mysql_db:
+    name: forgejo
+    state: present
+
+- name: create web1 db user
+  community.mysql.mysql_user:
+    name: 'forgejo'
+    password: 'epsi1234'
+    host: '172.16.135.24'
+    priv: 'forgejo.*:ALL'
+    state: present
+
+- name: create web2 forgejo db user
+  community.mysql.mysql_user:
+    name: 'forgejo'
+    password: 'epsi1234'
+    host: '172.16.135.25'
+    priv: 'forgejo.*:ALL'
+    state: present
+
+- name: create lb1 forgejo db user
+  community.mysql.mysql_user:
+    name: 'forgejo'
+    password: 'epsi1234'
+    host: '172.16.135.20'
+    priv: 'forgejo.*:ALL'
+    state: present
+
+- name: create lb2 forgejo db user
+  community.mysql.mysql_user:
+    name: 'forgejo'
+    password: 'epsi1234'
+    host: '172.16.135.21'
+    priv: 'forgejo.*:ALL'
+    state: present

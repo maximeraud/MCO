@@ -1,0 +1,60 @@
+---
+- hosts: all
+  gather_facts: true
+  become: true
+  roles:
+    - role: all
+
+- hosts: proxy
+  gather_facts: true
+  become: true
+  roles:
+    - role: haproxy
+
+- hosts: bdd
+  gather_facts: true
+  become: true
+  roles:
+    - role: bdd
+
+- hosts: keepalivedmaster
+  gather_facts: yes
+  become: true
+  roles:
+    - role: keepalivedmaster
+
+- hosts: keepalivedbackup
+  gather_facts: yes
+  become: true
+  roles:
+    - role: keepalivedbackup
+
+- hosts: nfs
+  gather_facts: yes
+  become: true
+  roles:
+    - role: nfs
+
+- hosts: galerabootstrap
+  gather_facts: yes
+  become: true
+  roles:
+    - role: galerabootstrap
+
+- hosts: galera
+  gather_facts: yes
+  become: true
+  roles:
+    - role: galera
+
+- hosts: webservers
+  gather_facts: yes
+  become: true
+  roles:
+    - role: web
+
+- hosts: graylog
+  gather_facts: yes
+  become: true
+  roles:
+    - role: graylog

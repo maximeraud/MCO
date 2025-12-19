@@ -1,0 +1,2 @@
+/srv/nfs 172.16.135.22/32(rw,sync,no_subtree_check,no_root_squash,anonuid=1000,anongid=1000)
+/srv/nfs 172.16.135.23/32(rw,sync,no_subtree_check,no_root_squash,anonuid=1000,anongid=1000)

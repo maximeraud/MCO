@@ -1,0 +1,34 @@
+---
+- name: Tell kernel to accept non local IP binding
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_nonlocal_bind
+    value: "1"
+    state: present
+    reload: true
+    sysctl_set: true
+    sysctl_file: /etc/sysctl.d/10-nonlocalbind.conf
+
+- name: force systemctl sysctl restart
+  command: sudo systemctl restart systemd-sysctl
+
+- name: install haproxy and hatop
+  ansible.builtin.apt:
+    update_cache: yes
+    pkg:
+      - haproxy
+      - hatop
+
+- name: copy haproxy config file
+  copy:
+    src: roles/haproxy/templates/haproxy.cfg
+    dest: /etc/haproxy/haproxy.cfg
+    owner: root
+    group: root
+    mode: "0644"
+  register: haproxyconfig
+
+- name: Reload haproxy
+  systemd_service:
+    name: haproxy.service
+    state: reloaded
+  when: haproxyconfig.changed

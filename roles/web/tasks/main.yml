@@ -1,0 +1,54 @@
+---
+- name: remove apache2
+  apt:
+    update_cache: yes
+    name: apache2
+    state: absent
+
+- name: Install docker and docker-compose
+  apt:
+    pkg:
+      - docker.io
+      - docker-compose
+      - nfs-common
+
+- name: create forgejo data folder
+  file:
+    path: /home/forgejo
+    state: directory
+    owner: 1000
+    group: 1000
+    mode: "0755"
+
+- name: mount the nfs export into /home/forgejo
+  ansible.posix.mount:
+    src: 172.16.135.26:/srv/nfs
+    path: /home/forgejo
+    opts: rw,sync
+    state: mounted
+    fstype: nfs
+
+- name: create nginx compose folder
+  file:
+    path: /home/grp2/forgejo
+    state: directory
+    owner: 1000
+    group: 1000
+    mode: "0755"
+
+- name: copy compose file
+  copy:
+    src: roles/web/templates/docker-compose.yml
+    dest: /home/grp2/forgejo/docker-compose.yml
+    owner: 1000
+    group: 1000
+    mode: '0644'
+
+- name: forgejo docker-compose
+  community.docker.docker_compose_v2:
+    project_src: forgejo
+  register: output
+
+- name: show results
+  ansible.builtin.debug:
+    var: output

@@ -1,0 +1,25 @@
+---
+- name: Install nfs-server
+  apt:
+    pkg:
+      - nfs-kernel-server
+
+- name: Create repository /srv/nfs
+  file:
+    name: /srv/nfs
+    state: directory
+    mode: "0755"
+
+- name: Copy NFS exports file
+  copy:
+    src: roles/nfs/templates/exports
+    dest: /etc/exports
+    owner: root
+    group: root
+    mode: "0644"
+  register: nfsconfig
+
+- name: exports filesystems to the network
+  command: exportfs -a
+  when: nfsconfig.changed
+
